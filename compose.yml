@@ -1,0 +1,21 @@
+services:
+  processor:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: polar-processor
+    volumes:
+      - ./sessions:/app/sessions:ro
+      - ./frontend/public/data:/app/output:rw
+    profiles:
+      - process
+
+  web:
+    image: nginx:alpine
+    container_name: polar-web-server
+    ports:
+      - "13000:80"
+    volumes:
+      - ./frontend/public:/usr/share/nginx/html:ro
+    profiles:
+      - web

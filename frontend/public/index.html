@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sport Session Stats</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <h1>📊 Sport Session Stats</h1>
+    <div class="navbar-menu">
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div id="status">Loading chart...</div>
+    <div class="controls-panel">
+      <div class="legend-controls">
+        <div class="sessions-header">
+          <h3>Sessions</h3>
+          <button onclick="resetFilters()" class="reset-button">Reset Filters</button>
+        </div>
+        <input type="text" id="searchLegend" placeholder="Search sessions..." />
+        
+        <div class="filter-section">
+          <h4>Distance Filter (km)</h4>
+          <div class="dual-range-container">
+            <div class="dual-range-slider">
+              <input type="range" id="minDistance" min="0" max="50" value="0" step="1" class="thumb thumb-left" />
+              <input type="range" id="maxDistance" min="0" max="50" value="50" step="1" class="thumb thumb-right" />
+              <div class="slider">
+                <div class="track"></div>
+                <div class="range" id="rangeTrack"></div>
+              </div>
+            </div>
+            <div class="range-labels">
+              <span id="minDistanceLabel">0 km</span>
+              <span>to</span>
+              <span id="maxDistanceLabel">50 km</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="legend-actions">
+          <button id="showAllBtn" onclick="toggleAllDatasets(true)">Show All</button>
+          <button id="hideAllBtn" onclick="toggleAllDatasets(false)">Hide All</button>
+          <span id="visibleCount">0 visible</span>
+        </div>
+        <div id="customLegend" class="custom-legend"></div>
+      </div>
+    </div>
+    
+    <div class="chart-container">
+      <canvas id="myChart"></canvas>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/chart.js"></script>
+</body>
+</html>
+
