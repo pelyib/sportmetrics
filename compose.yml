@@ -9,9 +9,7 @@ services:
       - ./docker/backend/data/queues:/app/queues:rw
       - ./docker/backend/data/state:/app/state:rw
       - ./docker/backend/data/sessions:/app/sessions:ro
-      - ./frontend/public/data:/app/output:rw
-      #      - ./docker/frontend/data/charts:/app/output:rw TODO: configure nginx to be able to serve from different
-      #      directories
+      - ./docker/frontend/data/charts:/app/output:rw
     profiles:
       - automation
     restart: unless-stopped
@@ -36,7 +34,8 @@ services:
     ports:
       - "13000:80"
     volumes:
-#      - ./docker/frontend/data/charts:/app/charts:ro TODO: configure nginx to be able to serve from different directories
       - ./frontend/public:/usr/share/nginx/html:ro
+      - ./docker/frontend/data/charts:/app/data:ro
+      - ./docker/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     profiles:
       - web
