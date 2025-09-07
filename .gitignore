@@ -3,3 +3,6 @@ docker/backend/data/sessions/
 docker/backend/data/state/
 docker/frontend/data/charts/
 frontend/public/data/
+
+automation_config.json
+compose.override.yml

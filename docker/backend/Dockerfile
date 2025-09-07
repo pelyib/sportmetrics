@@ -25,14 +25,16 @@ ENV PYTHONPATH="/home/appuser/.local/lib/python3.11/site-packages:${PYTHONPATH}"
 
 COPY --from=builder /root/.local /home/appuser/.local
 
-COPY backend/src/session_processor.py .
+# Copy all backend source code
+COPY backend/src/ ./src/
 
-RUN mkdir -p /app/output
-
-RUN useradd --create-home --shell /bin/bash appuser && \
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/output /app/queues /app/state && \
+    useradd --create-home --shell /bin/bash appuser && \
     chown -R appuser:appuser /app /home/appuser/.local
 
 USER appuser
 
-ENTRYPOINT ["python", "session_processor.py"]
-CMD ["--help"]
+# Default to automation mode, but allow override for single processor runs
+ENTRYPOINT ["python", "-m", "src.automation.start_automation"]
+CMD ["--config", "src/automation/automation_config.json"]

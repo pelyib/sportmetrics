@@ -1,0 +1,4 @@
+services:
+  automation:
+    volumes:
+      - ./backend/src:/app/src:ro

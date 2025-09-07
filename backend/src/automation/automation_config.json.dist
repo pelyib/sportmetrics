@@ -1,0 +1,54 @@
+{
+  "file_watcher": {
+    "sessions_dir": "sessions",
+    "poll_interval": 5,
+    "stability_check_seconds": 2,
+    "state_file": "backend/src/automation/last_processed.txt",
+    "default_stat_configs": [
+      {
+        "stat_id": "all_sessions",
+        "stat_name": "All Sessions",
+        "priority": 3
+      },
+      {
+        "stat_id": "running_sessions", 
+        "stat_name": "Running Sessions",
+        "priority": 1
+      },
+      {
+        "stat_id": "cycling_sessions",
+        "stat_name": "Cycling Sessions", 
+        "priority": 1
+      },
+      {
+        "stat_id": "long_distance",
+        "stat_name": "Long Distance (20km+)",
+        "priority": 2
+      }
+    ]
+  },
+  "queue_worker": {
+    "poll_interval": 3,
+    "max_concurrent_tasks": 1,
+    "task_timeout": 300,
+    "retry_failed_tasks": true,
+    "max_retries": 3
+  },
+  "storage": {
+    "queues_dir": "backend/src/automation/queues",
+    "output_dir": "output",
+    "backup_enabled": true,
+    "cleanup_old_tasks": true,
+    "cleanup_after_days": 30
+  },
+  "logging": {
+    "level": "INFO",
+    "file": null,
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "monitoring": {
+    "health_check_interval": 30,
+    "restart_on_failure": true,
+    "max_restart_attempts": 3
+  }
+}

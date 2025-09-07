@@ -26,11 +26,17 @@ show_usage() {
     echo "  web restart     - Restart web server"
     echo "  web status      - Show web server status"
     echo ""
+    echo "  automation start - Start automation (file watcher + queue worker)"
+    echo "  automation stop  - Stop automation"
+    echo "  automation restart - Restart automation"
+    echo "  automation status  - Show automation status"
+    echo "  automation logs    - Show automation logs"
+    echo ""
     echo "  process <args>  - Run processor with arguments"
     echo ""
     echo "Examples:"
     echo "  $SCRIPT_NAME web start"
-    echo "  $SCRIPT_NAME web stop"
+    echo "  $SCRIPT_NAME automation start"
     echo "  $SCRIPT_NAME process --sport RUNNING --output running.json"
     echo "  $SCRIPT_NAME process --help"
     echo ""
@@ -95,6 +101,69 @@ manage_web() {
     esac
 }
 
+# Automation service management
+manage_automation() {
+    local action=$1
+    
+    case $action in
+        start)
+            echo -e "${YELLOW}🤖 Starting automation services...${NC}"
+            docker-compose --profile automation up -d
+            
+            echo ""
+            echo -e "${GREEN}🎉 Automation services are running!${NC}"
+            echo -e "${BLUE}📁 Monitoring: ./sessions${NC}"
+            echo -e "${BLUE}📊 Output: ./frontend/public/data${NC}"
+            
+            # Show queue status after a moment
+            sleep 2
+            echo ""
+            echo -e "${BLUE}📋 Queue status:${NC}"
+            docker-compose --profile automation exec automation ls -la /app/queues/ 2>/dev/null || echo "  Queues initializing..."
+            ;;
+            
+        stop)
+            echo -e "${YELLOW}🛑 Stopping automation services...${NC}"
+            docker-compose --profile automation down
+            echo -e "${GREEN}✅ Automation services stopped${NC}"
+            ;;
+            
+        restart)
+            echo -e "${YELLOW}🔄 Restarting automation services...${NC}"
+            docker-compose --profile automation down
+            docker-compose --profile automation up -d
+            echo -e "${GREEN}✅ Automation services restarted${NC}"
+            ;;
+            
+        status)
+            echo -e "${BLUE}📋 Automation services status:${NC}"
+            if docker-compose --profile automation ps | grep -q "polar-automation"; then
+                docker-compose --profile automation ps
+                echo ""
+                echo -e "${GREEN}✅ Automation services are running${NC}"
+                
+                # Show queue stats if possible
+                echo ""
+                echo -e "${BLUE}📊 Queue directories:${NC}"
+                docker-compose --profile automation exec automation ls -la /app/queues/ 2>/dev/null || echo "  Cannot access queue info"
+            else
+                echo -e "${RED}❌ Automation services are not running${NC}"
+            fi
+            ;;
+            
+        logs)
+            echo -e "${BLUE}📋 Automation services logs:${NC}"
+            docker-compose --profile automation logs -f automation
+            ;;
+            
+        *)
+            echo -e "${RED}❌ Unknown automation command: $action${NC}"
+            echo "Available: start, stop, restart, status, logs"
+            exit 1
+            ;;
+    esac
+}
+
 manage_process() {
     shift # Remove 'process' from args
     echo -e "${YELLOW}📊 Running processor...${NC}"
@@ -116,6 +185,14 @@ case $COMMAND in
             show_usage
         fi
         manage_web "$2"
+        ;;
+        
+    automation)
+        if [ $# -lt 2 ]; then
+            echo -e "${RED}❌ Automation command requires an action${NC}"
+            show_usage
+        fi
+        manage_automation "$2"
         ;;
         
     process)
