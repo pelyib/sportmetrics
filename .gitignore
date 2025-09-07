@@ -1,2 +1,5 @@
-sessions/
+docker/backend/data/queues/
+docker/backend/data/sessions/
+docker/backend/data/state/
+docker/frontend/data/charts/
 frontend/public/data/
