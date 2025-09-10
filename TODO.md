@@ -197,20 +197,53 @@ Keep core logic:
 - ✅ Add security restrictions (JSON files only)
 - ✅ Update Docker compose with custom nginx config and data volume
 
-## Phase 5: Processor Refactoring (Future)
+## Phase 5: Technology Migration (Future)
 
-### 11. Refactor current session_processor.py into base class + specialized processors
+### 11. Migrate Python backend to TypeScript/Node.js
+
+#### Queue System Migration: JSON Files → Redis
+- **Current:** File-based JSON queues with manual locking
+- **Future:** Redis with proper atomic operations and pub/sub
+- **Benefits:** Better concurrency, built-in persistence, clustering support
+- **Library:** BullMQ for advanced queue features (retries, delays, monitoring)
+- **Implementation:** 
+  - Migrate queue operations to Redis Lists/Streams
+  - Use BullMQ for job scheduling and retry logic
+  - Maintain same queue concepts (sport-based routing)
+
+#### Backend Language Migration: Python → TypeScript
+- **Current:** Python with custom queue management
+- **Future:** Node.js/TypeScript with mature Redis ecosystem
+- **Benefits:** 
+  - Excellent TypeScript support in Redis libraries (ioredis, BullMQ)
+  - Better async/await patterns for queue processing
+  - Rich ecosystem for web APIs and monitoring
+  - Unified language stack with frontend
+- **Migration Strategy:**
+  - Replace queue worker with TypeScript equivalent
+  - Port session processing logic to TypeScript
+  - Maintain Docker containerization approach
+
+#### Processor Architecture (Post-Migration)
+- Extract base processor class in TypeScript
+- Implement specialized processors per sport type
+- Use TypeScript interfaces for strong typing
+- Leverage async/await for better concurrency
+
+## Phase 6: Processor Refactoring (Future - Post Migration)
+
+### 12. Refactor session processing into base class + specialized processors
 
 #### Extract SessionProcessor base class (skeleton) with core functionality:
-- File loading (`load_session()`)
-- Progress tracking (tqdm integration)
-- Chart.js export (`export_to_chartjs()`)
-- Chart registration (`register_chart()`)
+- File loading (`loadSession()`)
+- Progress tracking 
+- Chart.js export (`exportToChartjs()`)
+- Chart registration (`registerChart()`)
 
 #### Make dynamic parts overridable:
-- `should_include_session()` - filtering logic per stat type
-- `extract_metrics()` - data mapping per stat type  
-- `get_chart_config()` - chart configuration per stat type
+- `shouldIncludeSession()` - filtering logic per stat type
+- `extractMetrics()` - data mapping per stat type  
+- `getChartConfig()` - chart configuration per stat type
 
 #### Create specialized processor classes:
 - `RunningProcessor(SessionProcessor)` - running-specific logic
