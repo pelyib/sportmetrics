@@ -1,4 +1,20 @@
 services:
+  # Automation service (file watcher + queue worker)
+  automation:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: polar-automation
+    volumes:
+      - ./docker/backend/data/queues:/app/queues:rw
+      - ./docker/backend/data/state:/app/state:rw
+      - ./docker/backend/data/sessions:/app/sessions:ro
+      - ./docker/frontend/data/charts:/app/output:rw
+    profiles:
+      - automation
+    restart: unless-stopped
+
+  # Manual processor service (for one-off runs)
   processor:
     build:
       context: .
@@ -9,6 +25,8 @@ services:
       - ./frontend/public/data:/app/output:rw
     profiles:
       - process
+    entrypoint: ["python", "src/session_processor.py"]
+    command: ["--help"]
 
   web:
     image: nginx:alpine
@@ -17,5 +35,7 @@ services:
       - "13000:80"
     volumes:
       - ./frontend/public:/usr/share/nginx/html:ro
+      - ./docker/frontend/data/charts:/app/data:ro
+      - ./docker/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     profiles:
       - web
